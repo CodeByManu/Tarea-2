@@ -3,6 +3,7 @@ import pandas as pd
 file = open("nfa4.txt", 'r')
 inputs = {"Estados": {"Inicial" : [], "Transitorio" : [], "Final" : []}, "Alfabeto" : [], "Transiciones" : []}
 titulos = ["Estados\n", "Alfabeto\n", "Transiciones\n"]
+states = []
 
 aux = ''
 for line in file:
@@ -33,9 +34,7 @@ for line in file:
             continue
         inputs["Transiciones"].append([line[0], line[2], line[7]])
     
-# print(inputs)
-
-states = []
+file.close()
 
 for i in inputs["Estados"]["Inicial"]:
     if i not in states:
@@ -47,10 +46,10 @@ for i in inputs["Estados"]["Final"]:
     if i not in states:
         states.append(i)
 
-print(states)
-
 transitions = inputs["Transiciones"]
 transition_table = pd.DataFrame(None, (states), inputs["Alfabeto"])
+subsets = pd.DataFrame(None, [], inputs["Alfabeto"])
+subsets_states = []
 
 for i in range(len(states)):
     for j in range(len(inputs["Alfabeto"])):
@@ -59,12 +58,31 @@ for i in range(len(states)):
 for t in transitions:
     i = states.index(t[0])
     j = inputs["Alfabeto"].index(t[1])
-    transition_table.iloc[i][j].append(t[2]) 
+    transition_table.iloc[i][j].append(t[2])
 
-# initial_states.append(transition_table["Estado inicial"])
+for i in range(len(inputs["Estados"]["Inicial"])):
+    subsets.loc[inputs["Estados"]["Inicial"][i]] = transition_table.loc[inputs["Estados"]["Inicial"][i]]
 
-# print(initial_states)
-print(states)
-print(inputs["Alfabeto"])
-# print(states)
+for n in range(len(inputs["Alfabeto"])):
+    x = (subsets.loc[states[0]][n])
+    subsets_states.append(x)
+
+
+for s in subsets_states:
+    if s != subsets.index.tolist():
+        aux = []
+        for j in inputs["Alfabeto"]:
+            auxil = []
+            for i in s:
+                for k in transition_table.loc[i][j]:
+                    if k not in aux:
+                        auxil.append(k)
+            aux.append(auxil)  
+            if len(aux) == len(inputs["Alfabeto"]):
+                subsets.loc[str(s)] = aux
+                for i in aux:
+                    if i not in subsets_states:
+                        subsets_states.append(i)
+        
 print(transition_table)
+print(subsets)
