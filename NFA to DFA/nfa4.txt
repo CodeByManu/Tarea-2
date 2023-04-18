@@ -5,7 +5,6 @@ B
 Alfabeto
 0
 1
-223
 Transiciones
 A 0 -> A
 A 1 -> A

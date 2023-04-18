@@ -1,3 +1,5 @@
+import pandas as pd
+
 file = open("nfa4.txt", 'r')
 inputs = {"Estados": {"Inicial" : [], "Transitorio" : [], "Final" : []}, "Alfabeto" : [], "Transiciones" : []}
 titulos = ["Estados\n", "Alfabeto\n", "Transiciones\n"]
@@ -31,7 +33,38 @@ for line in file:
             continue
         inputs["Transiciones"].append([line[0], line[2], line[7]])
     
-print(inputs)
+# print(inputs)
+
+states = []
+
+for i in inputs["Estados"]["Inicial"]:
+    if i not in states:
+        states.append(i)
+for i in inputs["Estados"]["Transitorio"]:
+    if i not in states:
+        states.append(i)
+for i in inputs["Estados"]["Final"]:
+    if i not in states:
+        states.append(i)
+
+print(states)
 
 transitions = inputs["Transiciones"]
-new_states = []
+transition_table = pd.DataFrame(None, (states), inputs["Alfabeto"])
+
+for i in range(len(states)):
+    for j in range(len(inputs["Alfabeto"])):
+        transition_table.iloc[i][j] = []
+        
+for t in transitions:
+    i = states.index(t[0])
+    j = inputs["Alfabeto"].index(t[1])
+    transition_table.iloc[i][j].append(t[2]) 
+
+# initial_states.append(transition_table["Estado inicial"])
+
+# print(initial_states)
+print(states)
+print(inputs["Alfabeto"])
+# print(states)
+print(transition_table)
