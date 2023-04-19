@@ -1,6 +1,6 @@
 
 file = open("nfae1.txt", 'r')
-inputs = {"Estados": {"Inicial" : [], "Transitorio" : [], "Final" : []}, "Alfabeto" : [], "Transiciones" : {"Normales": [], "Epsilon": []}}
+inputs = {"Estados": {"Inicial" : [], "Transitorio" : [], "Final" : []}, "Alfabeto" : [], "Transiciones" : {"Normales": [], "Epsilon": []},"EpsilonClausura":{}}
 titulos = ["Estados\n", "Alfabeto\n", "Transiciones\n"]
 X = []
 Y = []
@@ -46,9 +46,29 @@ for line in file:
             inputs["Transiciones"]["Normales"].append([line[0], line[2], line[7]])
 
 print(inputs)
-print(X,Y)
+file.close()
 
-for i in inputs["Transiciones"]["Epsilon"]:
-    print(i[0] + " e " + i[2])
+
+#Colocamos el mismo elemento a si mismo
+for i in X:
+    inputs["EpsilonClausura"][i] = [i]
+
+#Colocamos el destino de cada transicion epsilon 
+for i in range(len(inputs["Transiciones"]["Epsilon"])):
+    origen = inputs["Transiciones"]["Epsilon"][i][0]
+    destino = inputs["Transiciones"]["Epsilon"][i][2]
+    inputs["EpsilonClausura"][origen].append(destino)
+    
+#Comprobamos si las transiciones estan conectadas entre ellas para asignar mas elementos a Epsilon Clausura
+for estado in X:
+    for i in range(len(inputs["EpsilonClausura"][estado])):
+        c = inputs["EpsilonClausura"][estado][i]
+        if c != estado:
+            inputs["EpsilonClausura"][estado].extend(inputs["EpsilonClausura"][c])
+            inputs["EpsilonClausura"][estado] = list(set(inputs["EpsilonClausura"][estado]))
+
+
+print(inputs["EpsilonClausura"])
+            
             
     
