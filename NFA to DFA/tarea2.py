@@ -17,12 +17,15 @@ for line in file:
     if aux == titulos[0]:
         if line == aux:
             continue
+        x = line.split()
+        x = [elem.replace('>', '') for elem in x]
+        x = [elem.replace('*', '') for elem in x]
         if line[0] == '>':
-            inputs["Estados"]["Inicial"].append(line[1])
+            inputs["Estados"]["Inicial"].append(x[0])
         elif line[0] == '*':
-            inputs["Estados"]["Final"].append(line[1])
+            inputs["Estados"]["Final"].append(x[0])
         else:
-            inputs["Estados"]["Transitorio"].append(line[0])
+            inputs["Estados"]["Transitorio"].append(x[0])
 
     elif aux == titulos[1]:
         if line == aux:
@@ -32,9 +35,12 @@ for line in file:
     else:
         if line == aux:
             continue
-        inputs["Transiciones"].append([line[0], line[2], line[7]])
+        x = line.split()
+        x.pop(2)
+        inputs["Transiciones"].append(x)
     
 file.close()
+print(inputs)
 
 for i in inputs["Estados"]["Inicial"]:
     if i not in states:
@@ -67,9 +73,8 @@ for n in range(len(inputs["Alfabeto"])):
     x = (subsets.loc[states[0]][n])
     subsets_states.append(x)
 
-
 for s in subsets_states:
-    if s != subsets.index.tolist():
+    if tuple(s) not in subsets.index:
         aux = []
         for j in inputs["Alfabeto"]:
             auxil = []
@@ -83,6 +88,9 @@ for s in subsets_states:
                 for i in aux:
                     if i not in subsets_states:
                         subsets_states.append(i)
-        
-print(transition_table)
+    if s in subsets_states:
+        pass
+
+subsets = subsets.drop(subsets.index[0])
+
 print(subsets)
