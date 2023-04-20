@@ -93,4 +93,39 @@ for s in subsets_states:
 
 subsets = subsets.drop(subsets.index[0])
 
-print(subsets)
+# print(subsets)
+
+outputs = {"Estados": {"Inicial" : [], "Transitorio" : [], "Final" : []}, "Alfabeto" : inputs["Alfabeto"], "Transiciones" : []}
+print(outputs)
+
+# for s in subsets_states:
+#     print(s)
+    
+# print("-------")
+    
+# for s in subsets.index:
+#     print(s)
+    
+# print("-------")
+    
+# for s in transition_table.index:
+#     print(list(s))
+    
+# print("-------")
+for s in subsets_states:
+    for i in inputs["Estados"]["Inicial"]:
+        if s == list(i):
+            outputs["Estados"]["Inicial"].append(s)
+    
+    for i in inputs["Estados"]["Final"]:
+        if i in s:
+            outputs["Estados"]["Final"].append(s)
+    if s not in outputs["Estados"]["Inicial"] and s not in outputs["Estados"]["Final"]:
+        outputs["Estados"]["Transitorio"].append(s)
+
+for s in subsets.index:
+    for i in range(len(inputs["Alfabeto"])):
+        if subsets.loc[s][i] != []:
+            outputs["Transiciones"].append([s, inputs["Alfabeto"][i], subsets.loc[s][i]])
+
+print(outputs["Transiciones"])
