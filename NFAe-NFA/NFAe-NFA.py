@@ -45,14 +45,20 @@ for line in file:
         else:
             inputs["Transiciones"]["Normales"].append([line[0], line[2], line[7]])
 
-print(inputs)
+
+
+print(X)
+print()
+print(Y)
+print()
 file.close()
 
 
 #Colocamos el mismo elemento a si mismo
 for i in X:
     inputs["EpsilonClausura"][i] = [i]
-
+print(inputs)
+print()
 #Colocamos el destino de cada transicion epsilon 
 for i in range(len(inputs["Transiciones"]["Epsilon"])):
     origen = inputs["Transiciones"]["Epsilon"][i][0]
@@ -60,6 +66,7 @@ for i in range(len(inputs["Transiciones"]["Epsilon"])):
     inputs["EpsilonClausura"][origen].append(destino)
     
 #Comprobamos si las transiciones estan conectadas entre ellas para asignar mas elementos a Epsilon Clausura
+print(inputs["EpsilonClausura"][X[0]])
 for estado in X:
     for i in range(len(inputs["EpsilonClausura"][estado])):
         c = inputs["EpsilonClausura"][estado][i]

@@ -40,7 +40,6 @@ for line in file:
         inputs["Transiciones"].append(x)
     
 file.close()
-print(inputs)
 
 for i in inputs["Estados"]["Inicial"]:
     if i not in states:
@@ -53,8 +52,8 @@ for i in inputs["Estados"]["Final"]:
         states.append(i)
 
 transitions = inputs["Transiciones"]
-transition_table = pd.DataFrame(None, (states), inputs["Alfabeto"])
-subsets = pd.DataFrame(None, [], inputs["Alfabeto"])
+transition_table = pd.DataFrame(None, states, inputs["Alfabeto"])
+subsets = pd.DataFrame(None, None, inputs["Alfabeto"])
 subsets_states = []
 
 for i in range(len(states)):
@@ -93,10 +92,7 @@ for s in subsets_states:
 
 subsets = subsets.drop(subsets.index[0])
 
-# print(subsets)
-
 outputs = {"Estados": {"Inicial" : [], "Transitorio" : [], "Final" : []}, "Alfabeto" : inputs["Alfabeto"], "Transiciones" : []}
-print(outputs)
 
 # for s in subsets_states:
 #     print(s)
@@ -123,9 +119,63 @@ for s in subsets_states:
     if s not in outputs["Estados"]["Inicial"] and s not in outputs["Estados"]["Final"]:
         outputs["Estados"]["Transitorio"].append(s)
 
-for s in subsets.index:
+for s in subsets_states:
+    # print('\n', subsets_states[n])
     for i in range(len(inputs["Alfabeto"])):
-        if subsets.loc[s][i] != []:
-            outputs["Transiciones"].append([s, inputs["Alfabeto"][i], subsets.loc[s][i]])
+        if subsets.loc[str(s)][i] != []:
+            outputs["Transiciones"].append([s, inputs["Alfabeto"][i], subsets.loc[str(s)][i]])
 
-print(outputs["Transiciones"])
+fout = open("dfa_output.txt", "a")
+
+for line in outputs.keys():
+    if line == 'Estados':
+        aux = 'Estados'
+    elif line == 'Alfabeto':
+        aux = 'Alfabeto'
+    elif line == 'Transiciones':
+        aux = 'Transiciones'
+    
+    fout.write(f'{line}\n')
+    if titulos[0].strip() == aux:
+        for state in outputs['Estados']:
+            if state == 'Inicial':
+                for element in outputs['Estados'][state]:
+                    fout.write(f'>{{{",".join(element)}}}\n')
+            elif state == 'Transitorio':
+                for element in outputs['Estados'][state]:
+                    fout.write(f'{{{",".join(element)}}}\n')
+            elif state == 'Final':
+                for element in outputs['Estados'][state]:
+                    fout.write(f'*{{{",".join(element)}}}\n')
+    
+    elif titulos[1].strip() == aux:
+        for key in outputs['Alfabeto']:
+            fout.write(', '.join(key))
+            fout.write('\n')
+
+    elif titulos[2].strip() == aux:
+        for transition in outputs['Transiciones']:
+            for n, x in enumerate(transition):
+                if n == 0:
+                    fout.write('{')
+                    for c in x:
+                        if c == x[-1]:
+                            fout.write(c)
+                        else:
+                            fout.write(f'{c},')
+                    fout.write('} ')
+                
+                if n == 1:
+                    fout.write(f'{x} -> ')
+
+                if n == 2:
+                    fout.write('{')
+                    for c in x:
+                        if c == x[-1]:
+                            fout.write(c)
+                        else:
+                            fout.write(f'{c},')
+                    fout.write('}')
+            fout.write('\n')
+
+fout.close()
