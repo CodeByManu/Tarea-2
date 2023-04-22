@@ -80,6 +80,8 @@ for s in subsets_states:
             for i in s:
                 for k in transition_table.loc[i][j]:
                     if k not in aux:
+                        if k in auxil:
+                            break
                         auxil.append(k)
             aux.append(auxil)  
             if len(aux) == len(inputs["Alfabeto"]):
@@ -94,27 +96,13 @@ subsets = subsets.drop(subsets.index[0])
 
 outputs = {"Estados": {"Inicial" : [], "Transitorio" : [], "Final" : []}, "Alfabeto" : inputs["Alfabeto"], "Transiciones" : []}
 
-# for s in subsets_states:
-#     print(s)
-    
-# print("-------")
-    
-# for s in subsets.index:
-#     print(s)
-    
-# print("-------")
-    
-# for s in transition_table.index:
-#     print(list(s))
-    
-# print("-------")
 for s in subsets_states:
     for i in inputs["Estados"]["Inicial"]:
         if s == list(i):
             outputs["Estados"]["Inicial"].append(s)
     
     for i in inputs["Estados"]["Final"]:
-        if i in s:
+        if i in s and s not in outputs['Estados']['Final']:
             outputs["Estados"]["Final"].append(s)
     if s not in outputs["Estados"]["Inicial"] and s not in outputs["Estados"]["Final"]:
         outputs["Estados"]["Transitorio"].append(s)
@@ -125,7 +113,7 @@ for s in subsets_states:
         if subsets.loc[str(s)][i] != []:
             outputs["Transiciones"].append([s, inputs["Alfabeto"][i], subsets.loc[str(s)][i]])
 
-fout = open("dfa_output.txt", "a")
+fout = open("dfa_output.txt", "w")
 
 for line in outputs.keys():
     if line == 'Estados':
